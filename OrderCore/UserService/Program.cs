@@ -1,17 +1,38 @@
+using Microsoft.EntityFrameworkCore;
+using UserService.Data;
+using UserService.DTO;
+using UserService.Models;
+using UserService.Repository;
+using UserService.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
+// Controllers
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+
+// Repository et service
+builder.Services.AddScoped<IRepository<User>, UserRepository>();
+builder.Services.AddScoped<IService<UserReceiveDto, UserSendDto>, UserServiceImpl>();
+
+
+
+// DbContext
+string connectionString = builder.Configuration.GetConnectionString("default");
+builder.Services.AddDbContext<AppDbContext>(option =>
+    option.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+
+// Swagger
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Middleware
+
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
@@ -21,3 +42,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
