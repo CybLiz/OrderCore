@@ -7,6 +7,11 @@ namespace ProductService.Models
         public string Description { get; set; }
         public decimal Price { get; set; }
 
+        public override string ToString()
+        {
+            return $"Product(Id={Id}, Name={Name}, Description={Description}, Price={Price})";
+        }
+
 
     }
 }
